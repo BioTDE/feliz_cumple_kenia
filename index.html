@@ -961,6 +961,29 @@ const SPOTIFY = "https://open.spotify.com/intl-es/track/3Z69GuyA1GwA14ccCXTV25?s
   window.addEventListener("blur", ()=>{
     if(document.activeElement && document.activeElement.id === "spotify") musicaOff();
   });
+
+  // el botón intenta abrir la app con el esquema propio de Spotify;
+  // si en un segundo la app no tomó el control, cae al navegador
+  const boton = sec.querySelector(".btn-spotify");
+  boton.addEventListener("click", ev=>{
+    ev.preventDefault();
+    musicaOff();
+    const web = boton.href;
+    const t0 = Date.now();
+    let listo = false;
+    const rendirse = ()=>{ listo = true; };
+    document.addEventListener("visibilitychange", rendirse, {once:true});
+    window.addEventListener("pagehide", rendirse, {once:true});
+    window.addEventListener("blur", rendirse, {once:true});
+
+    window.location.href = "spotify:track:" + id;   // abre la app
+
+    setTimeout(()=>{
+      if(!listo && !document.hidden && Date.now() - t0 < 2500){
+        window.open(web, "_blank", "noopener");     // no había app: al navegador
+      }
+    }, 900);
+  });
 })();
 
 /* ============================================================
