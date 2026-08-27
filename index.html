@@ -382,15 +382,18 @@ h2{
 }
 .marco-spotify iframe{display:block;border-radius:14px;border:0;width:100%}
 .btn-spotify{
-  display:block;margin-top:12px;text-align:center;text-decoration:none;
-  background:#1DB954;color:#fff;
+  display:flex;align-items:center;justify-content:center;gap:11px;
+  margin-top:12px;text-decoration:none;
+  background:var(--fresa);color:#fff;
   font-family:'Baloo 2',cursive;font-weight:700;
   font-size:clamp(1rem,4vw,1.15rem);
   padding:13px 20px;border-radius:999px;
   border:var(--linea) solid var(--tinta);
   box-shadow:0 4px 0 var(--tinta);
-  transition:transform .12s,box-shadow .12s;
+  transition:transform .12s,box-shadow .12s,background .15s;
 }
+.btn-spotify svg{width:13px;height:15px;flex-shrink:0;display:block}
+.btn-spotify:hover{background:var(--fresa-hondo)}
 .btn-spotify:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--tinta)}
 .btn-spotify:active{transform:translateY(4px);box-shadow:0 0 0 var(--tinta)}
 .btn-spotify:focus-visible{outline:3px dashed var(--fresa-hondo);outline-offset:4px}
@@ -560,7 +563,7 @@ h2{
       <p>Hice esta página porque sabía que no podría felicitarte en persona por varias razones y motivos. Se me hizo un lindo detalle, entonces me puse a investigar y a armar todo Jsjsjsjs.</p>
       <p>Que la vida te siga tratando súper bonito, que sonrías, seas súper feliz siempre que puedas y espero y te la pases súper bien con la gente que te quiere y te cuida. Que se te cumpla todo lo que te propongas en lo que queda del año.</p>
       <p>Gracias por ser como eres. Feliz Cumpleaños, Kenia Celeste Acosta Berrelleza. ✿</p>
-      <p class="firma">— Eduardo</p>
+      <p class="firma">— Totoro</p>
     </div>
   </section>
 
@@ -576,7 +579,7 @@ h2{
     <p class="sub">Es la que quería que oyeras mientras ves todo esto.</p>
     <div class="marco-spotify" id="marco-spotify"></div>
     <p class="nota-spotify">
-      Si arriba solo suena un pedacito, dale al botón verde: se abre directo
+      Si arriba solo suena un pedacito, dale al botón rosa: se abre directo
       en tu Spotify, en esta canción. ✿
     </p>
   </section>
@@ -956,7 +959,10 @@ const SPOTIFY = "https://open.spotify.com/intl-es/track/7weXEtywT6SjhByI0wg8oO?s
     'allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" ' +
     'src="https://open.spotify.com/embed/track/' + id + '?utm_source=generator"></iframe>' +
     '<a class="btn-spotify" target="_blank" rel="noopener" ' +
-    'href="https://open.spotify.com/track/' + id + '">▶ Abrir la canción en Spotify</a>';
+    'href="https://open.spotify.com/track/' + id + '">' +
+    '<svg viewBox="0 0 12 14" aria-hidden="true"><path d="M1.5 1 L11 7 L1.5 13 Z" ' +
+    'fill="currentColor" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>' +
+    '<span>Escuchar en Spotify</span></a>';
   // si toca el reproductor, se calla la caja musical para que no se encimen
   window.addEventListener("blur", ()=>{
     if(document.activeElement && document.activeElement.id === "spotify") musicaOff();
