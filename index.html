@@ -375,6 +375,13 @@ h2{
   .acompanante{animation:none}
 }
 
+.marco-spotify{
+  margin-top:22px;background:#fff;
+  border:var(--linea) solid var(--tinta);border-radius:var(--r-blob);
+  padding:14px;box-shadow:var(--sombra-sticker);
+}
+.marco-spotify iframe{display:block;border-radius:14px;border:0;width:100%}
+
 /* ============================================================
    PIE + CONTROLES
    ============================================================ */
@@ -414,6 +421,9 @@ h2{
 <body>
 
 <canvas id="confeti" aria-hidden="true"></canvas>
+<!-- Si pones un archivo llamado musica.mp3 junto a index.html, la página lo usará.
+     Si no existe, suena una caja musical generada por código. -->
+<audio id="cancion" src="musica.mp3" loop preload="metadata"></audio>
 
 <!-- ==================== SOBRE ==================== -->
 <div id="portada">
@@ -538,6 +548,13 @@ h2{
     </button>
   </div>
 
+  <section id="cancion-fav" hidden>
+    <span class="eyebrow">y de fondo</span>
+    <h2>Una canción</h2>
+    <p class="sub">Dale play. Si tienes sesión en Spotify, suena completa.</p>
+    <div class="marco-spotify" id="marco-spotify"></div>
+  </section>
+
   <section class="cierre">
     <p class="grande">✧ 🎂 ✧</p>
     <p class="chico">hecho a mano, con cariño</p>
@@ -581,19 +598,82 @@ const suave = matchMedia("(prefers-reduced-motion: reduce)").matches;
 /* ============================================================
    2. SONIDO
    ============================================================ */
-let sonidoOn = true, AC = null;
+let sonidoOn = true, AC = null, MASTER = null;
+
+function arrancarAudio(){
+  if(AC) return AC;
+  AC = new (window.AudioContext||window.webkitAudioContext)();
+  MASTER = AC.createGain();
+  MASTER.gain.value = 1;
+  MASTER.connect(AC.destination);
+  return AC;
+}
+
 function nota(f, dur=.18, tipo="sine", vol=.07){
   if(!sonidoOn) return;
   try{
-    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    arrancarAudio();
     const o=AC.createOscillator(), g=AC.createGain();
     o.type=tipo; o.frequency.value=f;
-    o.connect(g); g.connect(AC.destination);
+    o.connect(g); g.connect(MASTER);
     const t=AC.currentTime;
     g.gain.setValueAtTime(vol,t);
     g.gain.exponentialRampToValueAtTime(.0001,t+dur);
     o.start(t); o.stop(t+dur+.02);
   }catch(e){}
+}
+
+/* ---------- caja musical (se genera sola, no ocupa archivo) ---------- */
+const ESCALA = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];   // do re mi sol la do
+const PATRON = [0,2,4,3, 1,3,5,4, 0,2,3,2, 4,3,1,0];
+const BAJOS  = [130.81, 174.61, 196.00, 130.81];
+const COMPAS = .46;
+let cajaT = 0, cajaPaso = 0, cajaTimer = null;
+
+function campanita(f, t, dur, vol, tipo="triangle"){
+  const o=AC.createOscillator(), g=AC.createGain();
+  o.type=tipo; o.frequency.value=f;
+  o.connect(g); g.connect(MASTER);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(vol, t+.014);
+  g.gain.exponentialRampToValueAtTime(.0001, t+dur);
+  o.start(t); o.stop(t+dur+.05);
+}
+
+function programarCaja(){
+  if(!AC) return;
+  while(cajaT < AC.currentTime + .5){
+    const i = cajaPaso % PATRON.length;
+    campanita(ESCALA[PATRON[i]], cajaT, 1.7, .05);
+    if(i % 4 === 0) campanita(BAJOS[(cajaPaso/4|0) % BAJOS.length], cajaT, 2.6, .032, "sine");
+    cajaT += COMPAS; cajaPaso++;
+  }
+}
+
+/* ---------- música: archivo propio si existe, caja musical si no ---------- */
+const cancion = document.getElementById("cancion");
+let hayArchivo = false, sonando = false;
+cancion.addEventListener("loadedmetadata", ()=>{ hayArchivo = true; });
+cancion.addEventListener("error", ()=>{ hayArchivo = false; });
+
+function musicaOn(){
+  if(sonando || !sonidoOn) return;
+  sonando = true;
+  if(hayArchivo){
+    cancion.volume = .45;
+    cancion.play().catch(()=>{ hayArchivo = false; sonando = false; musicaOn(); });
+  }else{
+    arrancarAudio();
+    cajaT = AC.currentTime + .25;
+    programarCaja();
+    cajaTimer = setInterval(programarCaja, 140);
+  }
+}
+
+function musicaOff(){
+  sonando = false;
+  cancion.pause();
+  if(cajaTimer){ clearInterval(cajaTimer); cajaTimer = null; }
 }
 const brillo = ()=>{[1046,1318,1567].forEach((f,i)=>setTimeout(()=>nota(f,.22,"triangle",.05),i*70));};
 const pop    = ()=>nota(660,.12,"sine",.06);
@@ -601,7 +681,8 @@ const pop    = ()=>nota(660,.12,"sine",.06);
 document.getElementById("sonido-btn").addEventListener("click", e=>{
   sonidoOn = !sonidoOn;
   e.currentTarget.textContent = sonidoOn ? "🔔" : "🔕";
-  if(sonidoOn) pop();
+  e.currentTarget.setAttribute("aria-pressed", String(!sonidoOn));
+  if(sonidoOn){ pop(); musicaOn(); } else { musicaOff(); }
 });
 
 /* ============================================================
@@ -665,6 +746,7 @@ function abrirSobre(){
   if(abierto) return; abierto = true;
   sobre.classList.add("abriendo");
   brillo();
+  musicaOn();
   setTimeout(()=>{ lanzarConfeti(140); portada.classList.add("abierto"); }, 900);
   setTimeout(()=>{ pagina.classList.add("visible"); portada.remove(); }, 1500);
 }
@@ -828,6 +910,30 @@ document.querySelectorAll(".acompanante").forEach(el=>{
     brillo();
   });
 });
+
+
+/* ============================================================
+   7c. CANCIÓN DE SPOTIFY
+   Pega aquí el enlace de la canción (Spotify > Compartir > Copiar
+   enlace). Déjalo vacío si no quieres reproductor.
+   ============================================================ */
+const SPOTIFY = "https://open.spotify.com/intl-es/track/3Z69GuyA1GwA14ccCXTV25?si=f52225e931cd4cd4";
+
+(function(){
+  if(!SPOTIFY.trim()) return;
+  const id = (SPOTIFY.match(/track\/([A-Za-z0-9]+)/) || SPOTIFY.match(/^([A-Za-z0-9]{22})$/) || [])[1];
+  if(!id) return;
+  const sec = document.getElementById("cancion-fav");
+  sec.hidden = false;
+  document.getElementById("marco-spotify").innerHTML =
+    '<iframe id="spotify" title="Reproductor de Spotify" height="152" loading="lazy" ' +
+    'allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" ' +
+    'src="https://open.spotify.com/embed/track/' + id + '?utm_source=generator"></iframe>';
+  // si toca el reproductor, se calla la caja musical para que no se encimen
+  window.addEventListener("blur", ()=>{
+    if(document.activeElement && document.activeElement.id === "spotify") musicaOff();
+  });
+})();
 
 /* ============================================================
    8. ARRANQUE
