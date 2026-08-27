@@ -223,6 +223,12 @@ h2{
 .btn:active{transform:translateY(4px);box-shadow:0 0 0 var(--tinta)}
 .btn:focus-visible{outline:3px dashed var(--fresa-hondo);outline-offset:4px}
 .btn.menta{background:var(--menta)}
+.aviso-mic{
+  margin:16px auto 0;max-width:38ch;
+  font-family:'Caveat',cursive;font-weight:600;
+  font-size:clamp(1rem,3.8vw,1.2rem);line-height:1.4;
+  color:var(--tinta-suave);
+}
 
 /* ============================================================
    GALERÍA POLAROID
@@ -534,8 +540,13 @@ h2{
       <span class="contador" id="contador">5 velitas encendidas</span>
 
       <div class="btn-fila">
+        <button class="btn" id="btn-mic">🎤 Soplar de verdad</button>
         <button class="btn menta" id="btn-reset">Encender otra vez</button>
       </div>
+      <p class="aviso-mic">
+        El botón del micrófono te va a pedir permiso. Es solo para oír el soplido:
+        no graba nada ni se guarda nada. Si prefieres, tócalas con el dedo. ✿
+      </p>
     </div>
   </section>
 
@@ -839,6 +850,62 @@ function actualizar(){
     contador.textContent = quedan === 1 ? "queda 1 velita…" : quedan + " velitas encendidas";
   }
 }
+
+
+/* --- micrófono: apagar las velitas soplando de verdad --- */
+let micActivo = false, micStream = null, micAC = null;
+
+document.getElementById("btn-mic").addEventListener("click", async e=>{
+  const btn = e.currentTarget;
+  if(micActivo){ apagarMic(btn); return; }
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    btn.textContent = "Aquí no se puede — tócalas";
+    btn.disabled = true; return;
+  }
+  btn.textContent = "Pidiendo permiso…";
+  try{
+    micStream = await navigator.mediaDevices.getUserMedia({audio:{
+      echoCancellation:false, noiseSuppression:false, autoGainControl:false
+    }});
+    micAC = new (window.AudioContext||window.webkitAudioContext)();
+    const src = micAC.createMediaStreamSource(micStream);
+    const an = micAC.createAnalyser();
+    an.fftSize = 1024; an.smoothingTimeConstant = .35;
+    src.connect(an);
+    const datos = new Uint8Array(an.frequencyBinCount);
+
+    micActivo = true;
+    btn.textContent = "🎤 Escuchando… ¡sopla!";
+    btn.classList.add("menta");
+
+    (function escuchar(){
+      if(!micActivo) return;
+      an.getByteFrequencyData(datos);
+      // el soplido es energía en las frecuencias bajas
+      let suma = 0;
+      for(let i=1;i<14;i++) suma += datos[i];
+      if(suma/13 > 118){
+        const viva = gVelas.querySelector(".vela:not(.apagada)");
+        if(viva) apagar(viva);
+        else { apagarMic(btn); return; }
+      }
+      requestAnimationFrame(escuchar);
+    })();
+  }catch(err){
+    btn.classList.remove("menta");
+    btn.textContent = "Sin micrófono — tócalas";
+    btn.disabled = true;
+  }
+});
+
+function apagarMic(btn){
+  micActivo = false;
+  if(micStream){ micStream.getTracks().forEach(t=>t.stop()); micStream = null; }
+  if(micAC){ micAC.close().catch(()=>{}); micAC = null; }
+  if(btn){ btn.textContent = "🎤 Soplar de verdad"; btn.classList.remove("menta"); }
+}
+// soltar el micrófono al salir de la página
+window.addEventListener("pagehide", ()=>apagarMic(document.getElementById("btn-mic")));
 
 document.getElementById("btn-reset").addEventListener("click", ()=>{
   ponerVelas(); pop();
