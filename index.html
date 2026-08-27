@@ -115,7 +115,8 @@ body{
 }
 .para{
   font-family:'Baloo 2',cursive;font-weight:800;
-  font-size:clamp(1.1rem,4.4vw,1.45rem);letter-spacing:.06em;
+  font-size:clamp(1.15rem,4.6vw,1.5rem);letter-spacing:.08em;
+  line-height:1.35;text-align:center;
   color:#fff;text-shadow:0 3px 0 rgba(91,58,74,.25);
 }
 @keyframes latir{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
@@ -413,6 +414,83 @@ h2{
 }
 .nota-spotify b{font-weight:700;color:var(--fresa-hondo)}
 
+
+/* ============================================================
+   VALES
+   ============================================================ */
+.vales{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));
+  gap:16px;margin-top:26px;
+}
+.vale{
+  position:relative;text-align:center;cursor:pointer;
+  background:var(--durazno);
+  border:var(--linea) dashed var(--tinta);border-radius:20px;
+  padding:20px 16px 18px;
+  box-shadow:0 4px 0 rgba(91,58,74,.14);
+  transition:transform .2s cubic-bezier(.34,1.6,.64,1),background .2s,box-shadow .2s;
+}
+.vale:hover{transform:translateY(-3px)}
+.vale:focus-visible{outline:3px dashed var(--fresa-hondo);outline-offset:5px}
+.vale b{
+  display:block;font-family:'Baloo 2',cursive;font-weight:800;
+  font-size:1.25rem;letter-spacing:.16em;color:var(--fresa-hondo);
+  margin-bottom:8px;
+}
+.vale-texto{
+  font-family:'Caveat',cursive;font-weight:600;
+  font-size:clamp(1.08rem,4vw,1.28rem);line-height:1.35;color:var(--tinta);
+  margin:0;
+}
+.vale.elegido{
+  background:var(--menta);border-style:solid;
+  box-shadow:0 5px 0 var(--tinta);transform:translateY(-3px);
+}
+.vale.elegido::after{
+  content:'✓';position:absolute;top:-12px;right:-8px;
+  width:32px;height:32px;border-radius:50%;
+  background:var(--fresa);color:#fff;
+  border:var(--linea) solid var(--tinta);
+  display:grid;place-items:center;
+  font-family:'Baloo 2',cursive;font-weight:800;font-size:1.05rem;
+}
+.vales.cerrado .vale{cursor:default;opacity:.5}
+.vales.cerrado .vale.elegido{opacity:1}
+
+.canjear-fila{margin-top:24px;text-align:center}
+.canjear-aviso{
+  margin-top:14px;font-family:'Caveat',cursive;font-weight:600;
+  font-size:clamp(1.1rem,4vw,1.32rem);color:var(--tinta-suave);min-height:1.4em;
+}
+.canjear-aviso.listo{color:var(--fresa-hondo)}
+#btn-canjear:disabled{opacity:.55;cursor:default;box-shadow:0 4px 0 var(--tinta)}
+
+/* ============================================================
+   CUENTA REGRESIVA
+   ============================================================ */
+.cuenta-caja{
+  background:#fff;border:var(--linea) solid var(--tinta);
+  border-radius:var(--r-blob);padding:30px 22px 26px;
+  box-shadow:var(--sombra-sticker);text-align:center;
+}
+.reloj{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:22px}
+.casilla{
+  background:var(--algodon);border:var(--linea) solid var(--tinta);
+  border-radius:16px;padding:12px 6px;min-width:74px;
+  box-shadow:0 4px 0 var(--tinta);
+}
+.casilla b{
+  display:block;font-family:'Baloo 2',cursive;font-weight:800;
+  font-size:clamp(1.6rem,7vw,2.2rem);line-height:1;color:var(--tinta);
+  font-variant-numeric:tabular-nums;
+}
+.casilla span{font-family:'Quicksand',sans-serif;font-weight:600;
+  font-size:.8rem;letter-spacing:.09em;text-transform:uppercase;color:var(--tinta-suave)}
+.llego{
+  font-family:'Caveat',cursive;font-size:clamp(1.4rem,5.5vw,1.9rem);
+  color:var(--fresa-hondo);font-weight:700;margin-top:16px;
+}
+
 /* ============================================================
    PIE + CONTROLES
    ============================================================ */
@@ -459,7 +537,7 @@ h2{
 <!-- ==================== SOBRE ==================== -->
 <div id="portada">
   <div class="sobre-caja">
-    <p class="para">PARA KENIA CELESTE</p>
+    <p class="para">PARA KENIA</p>
     <button class="sobre" id="sobre" aria-label="Abrir el sobre">
       <svg viewBox="0 0 300 200">
         <!-- cuerpo -->
@@ -518,7 +596,7 @@ h2{
   <section id="pastel">
     <span class="eyebrow">primero lo primero</span>
     <h2>Pide un deseo</h2>
-    <p class="sub">Tócalas una por una hasta apagarlas todas. Y no se vale espiar el deseo.</p>
+    <p class="sub">Antes de soplar, piénsale bien a tu deseo. Cierra los ojos si hace falta — no hay prisa. Cuando lo tengas, dale al micrófono y sóplale a las velitas.</p>
 
     <div class="pastel-zona" style="margin-top:26px">
       <svg class="pastel-svg" id="pastel-svg" viewBox="0 0 260 240" role="img" aria-label="Pastel de cumpleaños con cinco velitas">
@@ -544,8 +622,8 @@ h2{
         <button class="btn menta" id="btn-reset">Encender otra vez</button>
       </div>
       <p class="aviso-mic">
-        El botón del micrófono te va a pedir permiso. Es solo para oír el soplido:
-        no graba nada ni se guarda nada. Si prefieres, tócalas con el dedo. ✿
+        El navegador te va a pedir permiso del micrófono. Es solo para oír el soplido:
+        no graba nada ni se guarda nada. ✿
       </p>
     </div>
   </section>
@@ -593,6 +671,28 @@ h2{
       Si arriba solo suena un pedacito, dale al botón rosa: se abre directo
       en tu Spotify, en esta canción. ✿
     </p>
+  </section>
+
+  <!-- VALES -->
+  <section id="vales-sec" hidden>
+    <span class="eyebrow">canjeables cuando quieras</span>
+    <h2>Unos vales</h2>
+    <p class="sub">Escoge el que más te lata. Solo uno — al canjearlo me llega el aviso y ya sé qué te debo.</p>
+    <div class="vales" id="vales" role="radiogroup" aria-label="Vales disponibles"></div>
+    <div class="canjear-fila">
+      <button class="btn" id="btn-canjear" disabled>Primero escoge uno</button>
+      <p class="canjear-aviso" id="canjear-aviso"></p>
+    </div>
+  </section>
+
+  <!-- CUENTA REGRESIVA -->
+  <section id="cuenta-sec" hidden>
+    <div class="cuenta-caja">
+      <span class="eyebrow">todavía no se acaba</span>
+      <h2 id="cuenta-titulo">Falta una cosa más</h2>
+      <p class="sub" id="cuenta-sub">Algo que no cabe en una página web.</p>
+      <div class="reloj" id="reloj"></div>
+    </div>
   </section>
 
   <section class="cierre">
@@ -847,7 +947,7 @@ function actualizar(){
     const r = document.getElementById("pastel-svg").getBoundingClientRect();
     setTimeout(()=>lanzarConfeti(70, r.left+r.width/2, r.top+r.height*.3), 120);
   } else {
-    contador.textContent = quedan === 1 ? "queda 1 velita…" : quedan + " velitas encendidas";
+    contador.textContent = quedan === 1 ? "queda 1 velita…" : quedan + " velitas esperando tu deseo";
   }
 }
 
@@ -1063,6 +1163,175 @@ const SPOTIFY = "https://open.spotify.com/intl-es/track/4N7l9Xwe3waNYNMsO3vl1p?s
    8. ARRANQUE
    ============================================================ */
 ponerVelas();
+
+/* ============================================================
+   9. FRASCO, VALES Y CUENTA REGRESIVA
+   ---- Todo lo que puedes editar está en este bloque ----
+   ============================================================ */
+
+
+/* Vales canjeables: cambia los textos por los que quieras. */
+const VALES = [
+  { titulo:"VALE", nota:"Vale por un café, cuando tú digas." },
+  { titulo:"VALE", nota:"Vale por que te escuche una hora sin interrumpir." },
+  { titulo:"VALE", nota:"Vale por una llamada larga, a la hora que sea." },
+  { titulo:"VALE", nota:"Vale por un favor, sin preguntas." }
+];
+
+/* Aviso por correo cuando ella canjea un vale.
+   Saca tu clave gratis en https://web3forms.com (te llega por correo).
+   Si la dejas vacía, los vales se voltean pero no se puede canjear.  */
+const CLAVE_AVISO = "e738ecd2-1a97-43e6-987d-9161a4b9d6c7";
+
+/* Fecha del regalo. Formato: año-mes-díaThora:minutos */
+const FECHA_REGALO = "2026-08-31T12:00:00";
+const TEXTO_ESPERA = "Algo que no cabe en una página web.";
+const TEXTO_LLEGO  = "Ya llegó el día. Búscame. ✿";
+
+/* ---------------------- vales ---------------------- */
+(function(){
+  if(!VALES.length) return;
+  document.getElementById("vales-sec").hidden = false;
+
+  const cont   = document.getElementById("vales");
+  const boton  = document.getElementById("btn-canjear");
+  const aviso  = document.getElementById("canjear-aviso");
+  const puedeAvisar = CLAVE_AVISO.trim().length > 0;
+  let elegido = null, cerrado = false;
+
+  // si ya canjeó antes, no dejar que se repita
+  const recordar = (v)=>{ try{ localStorage.setItem("vale_canjeado", v); }catch(e){} };
+  const recordado = ()=>{ try{ return localStorage.getItem("vale_canjeado"); }catch(e){ return null; } };
+
+  function cerrar(nota){
+    cerrado = true;
+    cont.classList.add("cerrado");
+    boton.disabled = true;
+    boton.textContent = "Vale canjeado";
+    aviso.textContent = "Escogiste: " + nota + " — ya le llegó el aviso. ✿";
+    aviso.classList.add("listo");
+  }
+
+  async function avisar(texto){
+    const r = await fetch("https://api.web3forms.com/submit", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json", "Accept":"application/json" },
+      body: JSON.stringify({
+        access_key: CLAVE_AVISO,
+        subject: "Kenia canjeó su vale ✿",
+        from_name: "Página de cumpleaños",
+        message: "Kenia escogió este vale:\n\n" + texto
+      })
+    });
+    const j = await r.json();
+    if(!j.success) throw new Error("rechazado");
+  }
+
+  VALES.forEach((v,i)=>{
+    const tarjeta = document.createElement("div");
+    tarjeta.className = "vale";
+    tarjeta.tabIndex = 0;
+    tarjeta.setAttribute("role","radio");
+    tarjeta.setAttribute("aria-checked","false");
+
+    const t = document.createElement("b"); t.textContent = v.titulo || "VALE";
+    const nota = document.createElement("p"); nota.className = "vale-texto"; nota.textContent = v.nota;
+    tarjeta.append(t, nota);
+
+    const escoger = ()=>{
+      if(cerrado) return;
+      cont.querySelectorAll(".vale").forEach(x=>{
+        x.classList.remove("elegido");
+        x.setAttribute("aria-checked","false");
+      });
+      tarjeta.classList.add("elegido");
+      tarjeta.setAttribute("aria-checked","true");
+      elegido = v.nota;
+      boton.disabled = false;
+      boton.textContent = puedeAvisar ? "Canjear este vale" : "Este es el tuyo ✿";
+      aviso.textContent = "";
+      aviso.classList.remove("listo");
+      pop();
+      const r = tarjeta.getBoundingClientRect();
+      lanzarConfeti(14, r.left + r.width/2, r.top + r.height/2);
+    };
+    tarjeta.addEventListener("click", escoger);
+    tarjeta.addEventListener("keydown", ev=>{
+      if(ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); escoger(); }
+    });
+
+    cont.appendChild(tarjeta);
+  });
+
+  boton.addEventListener("click", async ()=>{
+    if(!elegido || cerrado) return;
+    if(!puedeAvisar){ cerrar(elegido); return; }
+    boton.disabled = true;
+    boton.textContent = "Enviando…";
+    try{
+      await avisar(elegido);
+      recordar(elegido);
+      cerrar(elegido);
+      brillo();
+      const r = boton.getBoundingClientRect();
+      lanzarConfeti(50, r.left + r.width/2, r.top);
+      corazones(r.left + r.width/2, r.top);
+    }catch(err){
+      boton.disabled = false;
+      boton.textContent = "Canjear este vale";
+      aviso.textContent = "No se pudo enviar. Checa tu internet e inténtalo otra vez.";
+    }
+  });
+
+  const previo = recordado();
+  if(previo){
+    cont.querySelectorAll(".vale").forEach(x=>{
+      if(x.querySelector(".vale-texto").textContent === previo){
+        x.classList.add("elegido");
+        x.setAttribute("aria-checked","true");
+      }
+    });
+    cerrar(previo);
+  }
+})();
+
+/* ---------------- cuenta regresiva ---------------- */
+(function(){
+  const meta = new Date(FECHA_REGALO).getTime();
+  if(isNaN(meta)) return;
+  document.getElementById("cuenta-sec").hidden = false;
+  const reloj = document.getElementById("reloj");
+  const sub = document.getElementById("cuenta-sub");
+  const titulo = document.getElementById("cuenta-titulo");
+  sub.textContent = TEXTO_ESPERA;
+
+  const casilla = (n, etiqueta)=>{
+    const d = document.createElement("div"); d.className = "casilla";
+    const b = document.createElement("b"); b.textContent = String(n).padStart(2,"0");
+    const s = document.createElement("span"); s.textContent = etiqueta;
+    d.append(b, s); return d;
+  };
+
+  function tic(){
+    const falta = meta - Date.now();
+    if(falta <= 0){
+      titulo.textContent = "Es hoy";
+      sub.textContent = TEXTO_LLEGO;
+      reloj.innerHTML = '<p class="llego">✿ ✿ ✿</p>';
+      clearInterval(timer);
+      return;
+    }
+    const s = Math.floor(falta/1000);
+    reloj.replaceChildren(
+      casilla(Math.floor(s/86400), "días"),
+      casilla(Math.floor(s/3600)%24, "horas"),
+      casilla(Math.floor(s/60)%60, "min"),
+      casilla(s%60, "seg")
+    );
+  }
+  tic();
+  const timer = setInterval(tic, 1000);
+})();
 </script>
 </body>
 </html>
